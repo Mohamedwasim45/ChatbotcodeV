@@ -1,0 +1,54 @@
+#wasim code for chat history
+
+import google.generativeai as genai
+
+# Configure the API key
+genai.configure(api_key='AIzaSyD1zlCHltDVakBQU5KX016T3U1fexLP28A')
+
+# Gemini model setup is latest code Hence used it
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+# Function to track conversation history
+conversation_history = []
+
+def generate_response(user_input):
+    # Build the prompt with conversation history for context
+    if conversation_history:
+        prompt = "\n".join(conversation_history) + f"\nUser: {user_input}\nBot:"
+    else:
+        prompt = f"User: {user_input}\nBot:"
+    
+    response = model.generate_content(prompt)
+    
+    # Store the user input and bot response in history
+    conversation_history.append(f"User: {user_input}")
+    conversation_history.append(f"Bot: {response.text.strip()}")
+    
+    return response.text.strip()
+
+# Main chatbot loop
+def chat():
+    print("Greetings, curious mind! Got questions? I’ve got answers. Let’s rock this chat!")
+    print("Type 'quit' to close the conversation or 'reset' to start a new conversation.")
+
+    while True:
+        user_input = input("How can I assist you? ")
+        
+        # Exit condition
+        if user_input.lower() == 'quit':
+            print("Goodbye!")
+            break
+        
+        # Reset conversation condition
+        elif user_input.lower() == 'reset':
+            conversation_history.clear()
+            print("Conversation reset. Let's start fresh!")
+        
+        # Process user input and respond
+        else:
+            response = generate_response(user_input)
+            print(response)
+
+# Run the chatbot
+if __name__ == "__main__":
+    chat()
